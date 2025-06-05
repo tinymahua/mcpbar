@@ -1,5 +1,10 @@
-from mcpbar.schema import ServerSchema, ServerType
-from mcpbar.log import logger
+from mcpbar.schema.server_schema import ServerSchema
+from mcpbar.schema.ai_schema import AiProviderSchema
+import abc
+from enum import Enum
+from collections import OrderedDict
+from mcpbar.schema.ai_schema import AiModelSchema, AiRequestSchema, AiResponseSchema
+from typing import Optional
 
 """
 Base Runnable class and Base server class
@@ -16,46 +21,47 @@ class BaseServer:
         if self.server_schema.server_type != self.server_type:
             raise ValueError(f"Server type {self.server_schema.server_type} not match {self.server_type}")
 
+    @abc.abstractmethod
     def get_runnable(self) -> BaseRunnable:
         raise NotImplemented
 
-"""
-Local Runnable Py and Server
-"""
 
-class LocalRunnablePy(BaseRunnable):
-    def __init__(self, interpreter: str, path: str):
-        self.interpreter = interpreter
-        self.path = path
+class BaseAiClient:
+    def __init__(self):
+        self.models: OrderedDict[str, AiModelSchema] = self.get_available_models()
+        self.used_model: Optional[AiModelSchema] = None
 
-    def run(self):
-        logger.debug(f'Use python interpreter: {self.interpreter}')
-        logger.debug(f"Run {self.path}")
+    def get_available_models(self) -> OrderedDict[str, AiModelSchema]:
+        models = OrderedDict()
+        models_enum = self.get_ai_models_enum()
+        for model_name in models_enum._member_names_:
+            m: models_enum = getattr(models_enum, model_name)
+            models[m.name] = AiModelSchema(model_id=m.name, model_name=m.value, model_desc="")
+        return models
 
+    @abc.abstractmethod
+    def get_ai_models_enum(self) -> type[Enum]:
+        raise NotImplemented
 
-class LocalRunnablePyServer(BaseServer):
-    server_type = ServerType.LOCAL_RUNNABLE_PY.name
+    def select_model(self, model_id: str):
+        self.used_model = self.models[model_id]
 
-    def get_runnable(self) -> LocalRunnablePy:
-        return LocalRunnablePy(
-            interpreter=self.server_schema.server_params.interpreter,
-            path=self.server_schema.server_params.path)
+    @abc.abstractmethod
+    def send_messages(self, request: AiRequestSchema) -> AiResponseSchema:
+        raise NotImplemented
 
-"""
-Local Runnable Js and Server
-"""
+    def check_used_model(self):
+        if self.used_model is None:
+            raise ValueError("Please select a model")
 
-class LocalRunnableJs(BaseRunnable):
-    def __init__(self, path: str):
-        self.path = path
+class BaseAiProvider:
+    ai_provider: str
 
-    def run(self):
-        logger.debug(f"Run {self.path}")
+    def __init__(self, ai_provider_schema: AiProviderSchema):
+        self.ai_provider_schema = ai_provider_schema
+        if self.ai_provider_schema.ai_provider != self.ai_provider:
+            raise ValueError(f"Ai provider {self.ai_provider_schema.ai_provider} not match {self.ai_provider}")
 
-
-
-class LocalRunnableJsServer(BaseServer):
-    server_type = ServerType.LOCAL_RUNNABLE_JS.name
-
-    def get_runnable(self) -> LocalRunnableJs:
-        return LocalRunnableJs(path=self.server_schema.server_params.path)
+    @abc.abstractmethod
+    def get_client(self) -> BaseAiClient:
+        raise NotImplemented

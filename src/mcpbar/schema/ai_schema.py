@@ -1,0 +1,87 @@
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Dict, Union, NewType
+
+from mcpbar.schema import anthropic as anthropic_schema
+from mcpbar.schema import openai as openai_schema
+from mcpbar.schema import deepseek as deepseek_schema
+
+ToolUnionParamSchema = NewType('ToolUnionParamSchema', anthropic_schema.AnthropicAiToolUnionParam)
+
+
+
+AiRequestSchema = Union[
+    anthropic_schema.AnthropicAiRequestSchema,
+    openai_schema.OpenAIRequestSchema,
+    openai_schema.OpenAICompletionsRequestSchema,
+    deepseek_schema.DeepSeekAIRequestSchema,
+    deepseek_schema.DeepSeekAICompletionsRequestSchema,
+]
+AiResponseSchema = Union[
+    anthropic_schema.AnthropicAiResponseSchema,
+    openai_schema.OpenAIResponseSchema,
+    openai_schema.OpenAIChatResponseSchema,
+    deepseek_schema.DeepSeekAIResponseSchema,
+    deepseek_schema.DeepSeekAIChatResponseSchema
+]
+
+
+@dataclass()
+class AiModelSchema:
+    model_id: str
+    model_name: str
+    model_desc: str
+
+
+class AiProvider(Enum):
+    Anthropic = 'Anthropic'
+    OpenAI = 'OpenAI'
+    DeepSeek = 'DeepSeek'
+
+
+@dataclass()
+class AnthropicAiProviderParams:
+    api_key: str
+    base_url: str
+
+
+@dataclass()
+class OpenAIAiProviderParams:
+    api_key: str
+    base_url: str
+
+
+@dataclass()
+class DeepSeekAiProviderParams:
+    api_key: str
+    base_url: str
+
+
+
+AiProviderParams = Union[
+    AnthropicAiProviderParams,
+    OpenAIAiProviderParams,
+    DeepSeekAiProviderParams,
+]
+
+
+@dataclass()
+class AiProviderSchema:
+    max_tokens: int
+    ai_provider: str
+    ai_provider_params_dict: Dict
+    ai_provider_params: AiProviderParams = field(init=False)
+
+
+    def __post_init__(self):
+        if not getattr(AiProvider, self.ai_provider, None):
+            raise ValueError(f"Invalid ai provider: {self.ai_provider}")
+
+        match  self.ai_provider:
+            case AiProvider.Anthropic.name:
+                self.ai_provider_params = AnthropicAiProviderParams(**self.ai_provider_params_dict)
+            case AiProvider.OpenAI.name:
+                self.ai_provider_params = OpenAIAiProviderParams(**self.ai_provider_params_dict)
+            case AiProvider.DeepSeek.name:
+                self.ai_provider_params = DeepSeekAiProviderParams(**self.ai_provider_params_dict)
+
