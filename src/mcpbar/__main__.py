@@ -15,6 +15,7 @@ from mcpbar.schema.anthropic import AnthropicAiRequestSchema, AnthropicAiMessage
 from mcpbar.schema.openai import OpenAICompletionsRequestSchema
 from anthropic.types.message_param import MessageParam
 from mcpbar.schema import deepseek
+from mcpbar.schema.ali_bailian import chat as ali_bailian_chat
 
 app = typer.Typer(name="mcpbar")
 
@@ -105,6 +106,19 @@ def run_server(
         #     stream=True
         # )
         req = deepseek.DeepSeekAICompletionsRequestSchema(
+            messages=[
+                {"role": "assistant", "content": "Talk like a school teacher."},
+                {
+                    "role": "assistant",
+                    "content": "How can I write a article about sky?",
+                },
+            ],
+            max_tokens=None,
+            tools=[],
+            stream=True
+        )
+    elif client.ai_provider.ai_provider == AiProvider.AliBailianChat.name:
+        req = ali_bailian_chat.AliBailianChatAICompletionsRequestSchema(
             messages=[
                 {"role": "assistant", "content": "Talk like a school teacher."},
                 {

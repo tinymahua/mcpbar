@@ -2,7 +2,7 @@ from .. import openai
 from typing import Iterable, Union, Optional
 
 DeepSeekAIMessageInputParam = openai.ResponseInputParam
-DeepSeeAIInputParam = Union[str, DeepSeekAIMessageInputParam]
+DeepSeekAIInputParam = Union[str, DeepSeekAIMessageInputParam]
 
 DeepSeekAIToolParam = openai.ToolParam
 DeepSeekAIToolsParam = Iterable[DeepSeekAIToolParam]

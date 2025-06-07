@@ -6,6 +6,7 @@ from mcpbar.schema.ai_schema import (
     AiProviderSchema, AiProvider)
 from typing import Optional
 from mcpbar.provider import anthropic_ai_provider, openai_provider, deepseek_ai_provider
+from mcpbar.provider import ali_bailian_chat_provider
 
 
 class McpBarClient:
@@ -33,6 +34,8 @@ class McpBarClient:
                 self.ai_provider = openai_provider.OpenAIProvider(ai_provider_schema)
             case AiProvider.DeepSeek.name:
                 self.ai_provider = deepseek_ai_provider.DeepSeekAIProvider(ai_provider_schema)
+            case AiProvider.AliBailianChat.name:
+                self.ai_provider = ali_bailian_chat_provider.AliBailianChatAIProvider(ai_provider_schema)
             case _:
                 raise ValueError(f"Unknown ai provider: {ai_provider_schema.ai_provider}")
 

@@ -5,6 +5,7 @@ from typing import Dict, Union, NewType
 from mcpbar.schema import anthropic as anthropic_schema
 from mcpbar.schema import openai as openai_schema
 from mcpbar.schema import deepseek as deepseek_schema
+from mcpbar.schema.ali_bailian import chat as ali_bailian_chat_schema
 
 ToolUnionParamSchema = NewType('ToolUnionParamSchema', anthropic_schema.AnthropicAiToolUnionParam)
 
@@ -16,13 +17,17 @@ AiRequestSchema = Union[
     openai_schema.OpenAICompletionsRequestSchema,
     deepseek_schema.DeepSeekAIRequestSchema,
     deepseek_schema.DeepSeekAICompletionsRequestSchema,
+    ali_bailian_chat_schema.AliBailianChatAIRequestSchema,
+    ali_bailian_chat_schema.AliBailianChatAICompletionsRequestSchema,
 ]
 AiResponseSchema = Union[
     anthropic_schema.AnthropicAiResponseSchema,
     openai_schema.OpenAIResponseSchema,
     openai_schema.OpenAIChatResponseSchema,
     deepseek_schema.DeepSeekAIResponseSchema,
-    deepseek_schema.DeepSeekAIChatResponseSchema
+    deepseek_schema.DeepSeekAIChatResponseSchema,
+    ali_bailian_chat_schema.AliBailianChatAIResponseSchema,
+    ali_bailian_chat_schema.AliBailianChatAIChatResponseSchema,
 ]
 
 
@@ -37,6 +42,7 @@ class AiProvider(Enum):
     Anthropic = 'Anthropic'
     OpenAI = 'OpenAI'
     DeepSeek = 'DeepSeek'
+    AliBailianChat = 'AliBailianChat'
 
 
 @dataclass()
@@ -56,12 +62,16 @@ class DeepSeekAiProviderParams:
     api_key: str
     base_url: str
 
-
+@dataclass()
+class AliBailianChatProviderParams:
+    api_key: str
+    base_url: str
 
 AiProviderParams = Union[
     AnthropicAiProviderParams,
     OpenAIAiProviderParams,
     DeepSeekAiProviderParams,
+    AliBailianChatProviderParams,
 ]
 
 
@@ -84,4 +94,6 @@ class AiProviderSchema:
                 self.ai_provider_params = OpenAIAiProviderParams(**self.ai_provider_params_dict)
             case AiProvider.DeepSeek.name:
                 self.ai_provider_params = DeepSeekAiProviderParams(**self.ai_provider_params_dict)
+            case AiProvider.AliBailianChat.name:
+                    self.ai_provider_params = AliBailianChatProviderParams(**self.ai_provider_params_dict)
 
