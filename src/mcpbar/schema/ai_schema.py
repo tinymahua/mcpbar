@@ -80,20 +80,9 @@ class AiProviderSchema:
     max_tokens: int
     ai_provider: str
     ai_provider_params_dict: Dict
-    ai_provider_params: AiProviderParams = field(init=False)
+    # ai_provider_params: AiProviderParams = field(init=False)
 
 
     def __post_init__(self):
         if not getattr(AiProvider, self.ai_provider, None):
             raise ValueError(f"Invalid ai provider: {self.ai_provider}")
-
-        match  self.ai_provider:
-            case AiProvider.Anthropic.name:
-                self.ai_provider_params = AnthropicAiProviderParams(**self.ai_provider_params_dict)
-            case AiProvider.OpenAI.name:
-                self.ai_provider_params = OpenAIAiProviderParams(**self.ai_provider_params_dict)
-            case AiProvider.DeepSeek.name:
-                self.ai_provider_params = DeepSeekAiProviderParams(**self.ai_provider_params_dict)
-            case AiProvider.AliBailianChat.name:
-                    self.ai_provider_params = AliBailianChatProviderParams(**self.ai_provider_params_dict)
-

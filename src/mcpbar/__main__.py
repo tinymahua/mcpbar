@@ -56,6 +56,7 @@ def run_server(
         return
 
     client.load_server(
+        tag="default",
         server_schema=ServerSchema(**server_meta)
     )
     client.load_ai_provider(

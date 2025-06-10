@@ -21,5 +21,5 @@ class LocalRunnablePyServer(BaseServer):
 
     def get_runnable(self) -> LocalRunnablePy:
         return LocalRunnablePy(
-            interpreter=self.server_schema.server_params.interpreter,
-            path=self.server_schema.server_params.path)
+            interpreter=self.server_params.interpreter,
+            path=self.server_params.path)

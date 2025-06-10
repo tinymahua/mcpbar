@@ -1,6 +1,7 @@
 from mcpbar.schema.server_schema import ServerType
 from mcpbar.base import BaseServer, BaseRunnable
 from mcpbar.log import logger
+from mcpbar.schema.server_schema import LocalRunnableJsParams
 
 """
 Local Runnable Js and Server
@@ -19,4 +20,4 @@ class LocalRunnableJsServer(BaseServer):
     server_type = ServerType.LOCAL_RUNNABLE_JS.name
 
     def get_runnable(self) -> LocalRunnableJs:
-        return LocalRunnableJs(path=self.server_schema.server_params.path)
+        return LocalRunnableJs(path=self.server_params.path)

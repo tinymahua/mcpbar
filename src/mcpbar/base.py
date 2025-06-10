@@ -1,10 +1,13 @@
-from mcpbar.schema.server_schema import ServerSchema
-from mcpbar.schema.ai_schema import AiProviderSchema
+from mcpbar.schema.server_schema import (
+    ServerSchema, ServerParams
+)
+from mcpbar.schema.ai_schema import AiProviderSchema, AiProviderParams
 import abc
 from enum import Enum
 from collections import OrderedDict
 from mcpbar.schema.ai_schema import AiModelSchema, AiRequestSchema, AiResponseSchema
-from typing import Optional
+from typing import Optional, Type
+
 
 """
 Base Runnable class and Base server class
@@ -16,10 +19,10 @@ class BaseRunnable:
 
 class BaseServer:
     server_type: str
-    def __init__(self, server_schema: ServerSchema):
-        self.server_schema = server_schema
-        if self.server_schema.server_type != self.server_type:
-            raise ValueError(f"Server type {self.server_schema.server_type} not match {self.server_type}")
+    server_params: ServerParams
+
+    def __init__(self, server_schema: ServerSchema, server_params_schema:  Type[ServerParams]):
+        self.server_schema = server_params_schema(**server_schema.server_params_dict)
 
     @abc.abstractmethod
     def get_runnable(self) -> BaseRunnable:
@@ -56,11 +59,13 @@ class BaseAiClient:
 
 class BaseAiProvider:
     ai_provider: str
+    ai_provider_params: AiProviderParams
 
-    def __init__(self, ai_provider_schema: AiProviderSchema):
+    def __init__(self, ai_provider_schema: AiProviderSchema,  ai_provider_params_schema: Type[AiProviderParams]):
         self.ai_provider_schema = ai_provider_schema
         if self.ai_provider_schema.ai_provider != self.ai_provider:
             raise ValueError(f"Ai provider {self.ai_provider_schema.ai_provider} not match {self.ai_provider}")
+        self.ai_provider_params = ai_provider_params_schema(**self.ai_provider_schema.ai_provider_params_dict)
 
     @abc.abstractmethod
     def get_client(self) -> BaseAiClient:
