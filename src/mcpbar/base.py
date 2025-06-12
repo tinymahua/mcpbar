@@ -6,7 +6,9 @@ import abc
 from enum import Enum
 from collections import OrderedDict
 from mcpbar.schema.ai_schema import AiModelSchema, AiRequestSchema, AiResponseSchema
-from typing import Optional, Type
+from typing import Optional, Type, List, Callable, Dict, Any, Tuple, Union
+from mcp import ClientSession, StdioServerParameters
+from contextlib import AsyncExitStack
 
 
 """
@@ -14,20 +16,32 @@ Base Runnable class and Base server class
 """
 
 class BaseRunnable:
+    def  __init__(self):
+        pass
+
     def run(self):
         pass
 
+McpServerParameters = Union[StdioServerParameters, Dict[str, Any]]
+
+
 class BaseServer:
     server_type: str
-    server_params: ServerParams
+    server_params: Optional[ServerParams] = None
+    client_session: Optional[ClientSession] = None
+
 
     def __init__(self, server_schema: ServerSchema, server_params_schema:  Type[ServerParams]):
-        self.server_schema = server_params_schema(**server_schema.server_params_dict)
+        self.server_params = server_params_schema(**server_schema.server_params_dict)
+        self.exit_stack = AsyncExitStack()
+
+    @abc.abstractmethod
+    def make_mcp_server_parameters(self) -> StdioServerParameters:
+        raise NotImplemented
 
     @abc.abstractmethod
     def get_runnable(self) -> BaseRunnable:
         raise NotImplemented
-
 
 class BaseAiClient:
     def __init__(self):

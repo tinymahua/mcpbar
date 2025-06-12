@@ -1,21 +1,12 @@
-import time
-
-from httpx import stream
-
+import asyncio
 from mcpbar.log import logger
-from mcpbar.client import McpBarClient
 from mcpbar.schema.server_schema import ServerSchema
-from mcpbar.schema.ai_schema import AiProviderSchema, AiProvider
+from mcpbar.schema.ai_schema import AiProviderSchema
 import typer
 import base64
 import json
 from typing import Dict, AnyStr, Any
-
-from mcpbar.schema.anthropic import AnthropicAiRequestSchema, AnthropicAiMessagesSchema, AnthropicAiStream, AnthropicAiMessageSchema
-from mcpbar.schema.openai import OpenAICompletionsRequestSchema
-from anthropic.types.message_param import MessageParam
-from mcpbar.schema import deepseek
-from mcpbar.schema.ali_bailian import chat as ali_bailian_chat
+from mcpbar.funcs import execute_server
 
 app = typer.Typer(name="mcpbar")
 
@@ -29,8 +20,6 @@ def run_server(
         ai_provider_meta_b64: str = typer.Option(default=...),
         ai_model: str = typer.Option(default=...),
 ):
-    logger.info("Run server")
-    client = McpBarClient()
     try:
         server_meta_str = base64.b64decode(server_meta_b64).decode()
     except Exception as e:
@@ -55,92 +44,8 @@ def run_server(
         logger.error(f"Error decoding ai provider meta with json load: {e}")
         return
 
-    client.load_server(
-        tag="default",
-        server_schema=ServerSchema(**server_meta)
-    )
-    client.load_ai_provider(
-        ai_provider_schema=AiProviderSchema(**ai_provider_meta)
-    )
-    ai_client = client.ai_client
+    asyncio.run(execute_server(ServerSchema(**server_meta), AiProviderSchema(**ai_provider_meta), ai_model))
 
-    ai_client.select_model(ai_model)
-
-    if client.ai_provider.ai_provider == AiProvider.Anthropic.name:
-        req = AnthropicAiRequestSchema(
-            messages=[
-                AnthropicAiMessagesSchema(
-                    MessageParam(
-                        role="user",
-                        content="Please say a joke about letters."
-                    )
-                )
-            ],
-            max_tokens=None,
-            tools=[],
-            stream=True
-        )
-    elif client.ai_provider.ai_provider == AiProvider.OpenAI.name:
-        # req = OpenAIRequestSchema(
-        #     input="Please say a joke about letters.",
-        #     max_output_tokens=None,
-        #     tools=[],
-        #     stream=True
-        # )
-        req = OpenAICompletionsRequestSchema(
-            messages=[
-                {"role": "assistant", "content": "Talk like a school teacher."},
-                {
-                    "role": "assistant",
-                    "content": "How can I write a article about sky?",
-                },
-            ],
-            max_tokens=None,
-            tools=[],
-            stream=True
-        )
-    elif client.ai_provider.ai_provider == AiProvider.DeepSeek.name:
-        # req = deepseek.DeepSeekAIRequestSchema(
-        #     input="Please say a joke about letters.",
-        #     max_output_tokens=None,
-        #     tools=[],
-        #     stream=True
-        # )
-        req = deepseek.DeepSeekAICompletionsRequestSchema(
-            messages=[
-                {"role": "assistant", "content": "Talk like a school teacher."},
-                {
-                    "role": "assistant",
-                    "content": "How can I write a article about sky?",
-                },
-            ],
-            max_tokens=None,
-            tools=[],
-            stream=True
-        )
-    elif client.ai_provider.ai_provider == AiProvider.AliBailianChat.name:
-        req = ali_bailian_chat.AliBailianChatAICompletionsRequestSchema(
-            messages=[
-                {"role": "assistant", "content": "Talk like a school teacher."},
-                {
-                    "role": "assistant",
-                    "content": "How can I write a article about sky?",
-                },
-            ],
-            max_tokens=None,
-            tools=[],
-            stream=True
-        )
-    else:
-        logger.error(f"Unsupported ai provider: {client.ai_provider.ai_provider}")
-        return
-
-    resp = ai_client.send_messages(request=req)
-    if resp is AnthropicAiMessageSchema:
-        logger.info(f'Resp: {resp}')
-    else:
-        for chunk in resp:
-            logger.info(f'Stream Chunk: {chunk}')
 
 def main():
     app()

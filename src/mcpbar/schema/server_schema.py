@@ -1,6 +1,6 @@
-from dataclasses import dataclass, field, fields, asdict
+from dataclasses import dataclass, field, asdict
 from enum import Enum
-from typing import Dict, Any, Union
+from typing import Dict, Any, Union, List
 from mcpbar.schema import extern_schema
 
 
@@ -16,16 +16,24 @@ class ServerType(Enum):
 
 @dataclass()
 class LocalRunnablePyParams:
-    interpreter: str
-    path: str
+    command: str
+    args: List[str]
+    env: Dict[str, str] = field(default_factory=dict)
 
 
 @dataclass()
 class LocalRunnableJsParams:
-    path: str
+    command: str
+    args: List[str]
+    env: Dict[str, str] = field(default_factory=dict)
 
 
-ServerParams = Union[LocalRunnablePyParams, LocalRunnableJsParams]
+@dataclass()
+class SseServerParams:
+    url: str
+
+
+ServerParams = Union[LocalRunnablePyParams, LocalRunnableJsParams, SseServerParams]
 
 def get_server_type_and_params_from_cline_server(server: extern_schema.ClineStdioServerSchema) -> (ServerType, ServerParams):
     args = server.args
@@ -33,9 +41,9 @@ def get_server_type_and_params_from_cline_server(server: extern_schema.ClineStdi
         raise ValueError("Invalid cline stdio server schema: miss cmd args")
     server_path = args[-1]
     if server_path.endswith(".py"):
-        return ServerType.LOCAL_RUNNABLE_PY, LocalRunnablePyParams(interpreter="", path=server_path)
+        return ServerType.LOCAL_RUNNABLE_PY, LocalRunnablePyParams(command=server.command, args=server.args, env=server.env)
     elif server_path.endswith(".js"):
-        return ServerType.LOCAL_RUNNABLE_JS, LocalRunnableJsParams(path=server_path)
+        return ServerType.LOCAL_RUNNABLE_JS, LocalRunnableJsParams(command=server.command, args=server.args, env=server.env)
     else:
         raise ValueError(f"Not support cline stdio server script type: `{server_path.split('.')[-1]}`")
 
@@ -51,7 +59,6 @@ class ServerSchema:
             raise ValueError(f"Invalid server type: {self.server_type}")
         if not getattr(ServerTransportType, self.server_transport_type, None):
             raise ValueError(f"Invalid server transport type: {self.server_transport_type}")
-
 
     @classmethod
     def from_cline_server_schema(cls, server_config: Dict):

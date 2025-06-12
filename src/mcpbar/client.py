@@ -1,9 +1,10 @@
 from mcpbar.base import BaseServer, BaseAiProvider, BaseAiClient
-from mcpbar.schema.server_schema import ServerSchema, ServerType
+from mcpbar.schema.server_schema import ServerSchema
 from mcpbar.schema.ai_schema import (
     AiProviderSchema)
 from typing import Optional
 from mcpbar.loader import ServersLoader, AIProviderLoader
+
 
 
 class McpBarClient:
@@ -14,8 +15,9 @@ class McpBarClient:
         self.server_loader = ServersLoader()
         self.ai_provider_loader = AIProviderLoader()
 
-    def load_server(self, tag: str, server_schema: ServerSchema):
+    async def load_server(self, tag: str, server_schema: ServerSchema):
         self.server = self.server_loader.load_server(tag, server_schema)
+        await self.server.prepare_session()
 
     def load_ai_provider(self, ai_provider_schema: AiProviderSchema):
         ai_provider_obj = self.ai_provider_loader.load_ai_provider(ai_provider_schema)
