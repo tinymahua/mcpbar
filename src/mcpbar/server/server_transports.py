@@ -13,6 +13,7 @@ class StdioTransportServerMixin:
     ) -> Tuple[Any, Any]:
         print(f'estack: {id(exit_stack)}')
         mcp_server_parameters = mcp_server_parameters_maker()
+        print("MCP server parameters:", mcp_server_parameters)
         stdio_transport = await exit_stack.enter_async_context(stdio_client(mcp_server_parameters))
         return stdio_transport
 

@@ -20,7 +20,7 @@ async def execute_server(server_schema: ServerSchema, ai_provider_schema: AiProv
     response = await client.server.client_session.list_tools()
     tools = response.tools
     for t in tools:
-        logger.info(t.name, t)
+        logger.info(t.name, t.description)
 
     # if client.ai_provider.ai_provider == AiProvider.Anthropic.name:
     #     req = AnthropicAiRequestSchema(
