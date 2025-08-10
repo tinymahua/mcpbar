@@ -79,3 +79,6 @@ class LocalRunnablePyServer(BaseServer, StdioTransportServerMixin):
         print(00)
         await self.client_session.initialize()
         return self.client_session
+
+    async def close_runtime(self):
+        await self.exit_stack.aclose()

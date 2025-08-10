@@ -43,6 +43,9 @@ class BaseServer:
     def get_runnable(self) -> BaseRunnable:
         raise NotImplemented
 
+    async def close_session(self):
+        await self.exit_stack.aclose()
+
 class BaseAiClient:
     def __init__(self):
         self.models: OrderedDict[str, AiModelSchema] = self.get_available_models()

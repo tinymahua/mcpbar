@@ -7,6 +7,7 @@ from mcpbar.schema.ai_schema import AiRequestSchema, AiResponseSchema, AiProvide
 class AliBailianChatAIModelsEnum(Enum):
     qwen_vl_plus = "qwen-vl-plus"
     qwen_plus = "qwen-plus"
+    qwen3_coder_plus = 'qwen3-coder-plus'
     deepseek_r1 = "deepseek-r1"
     deepseek_r1_distill_qwen_1_5b = "deepseek-r1-distill-qwen-1.5b"
 
@@ -43,7 +44,7 @@ class AliBailianChatAIProvider(BaseAiProvider):
 
     def get_client(self) -> AliBailianChatAIClient:
         return AliBailianChatAIClient(
-            base_url=self.ai_provider_schema.ai_provider_params.base_url,
-            api_key=self.ai_provider_schema.ai_provider_params.api_key,
+            base_url=self.ai_provider_params.base_url,
+            api_key=self.ai_provider_params.api_key,
             max_tokens=self.ai_provider_schema.max_tokens,
         )
