@@ -7,9 +7,10 @@ from mcpbar.schema.ai_schema import openai_schema
 from mcpbar.schema.ai_schema import ali_bailian_chat_schema
 from mcpbar.schema.ai_schema import ali_bailian_tts_schema
 from mcpbar.schema.ai_schema import deepseek_schema
+from mcpbar.schema.ai_schema import AiModelSchema, AiRequestSchema, AiResponseSchema
 
 
-async def execute_server(server_schema: ServerSchema, ai_provider_schema: AiProviderSchema, ai_model: str):
+async def execute_server(server_schema: ServerSchema, ai_provider_schema: AiProviderSchema, ai_model: str, req: AiRequestSchema):
     logger.info("Run server")
     client = McpBarClient()
 
@@ -28,83 +29,81 @@ async def execute_server(server_schema: ServerSchema, ai_provider_schema: AiProv
         logger.info(t.name, t.description)
 
 
-
-
-    if client.ai_provider.ai_provider == AiProvider.Anthropic.name:
-        req = anthropic_schema.AnthropicAiRequestSchema(
-            messages=[
-                anthropic_schema.AnthropicAiMessagesSchema(
-                    anthropic_schema.MessageParam(
-                        role="user",
-                        content="Please say a joke about letters."
-                    )
-                )
-            ],
-            max_tokens=None,
-            tools=[],
-            stream=True
-        )
-    elif client.ai_provider.ai_provider == AiProvider.OpenAI.name:
-        # req = OpenAIRequestSchema(
-        #     input="Please say a joke about letters.",
-        #     max_output_tokens=None,
-        #     tools=[],
-        #     stream=True
-        # )
-        req = openai_schema.OpenAICompletionsRequestSchema(
-            messages=[
-                {"role": "assistant", "content": "Talk like a school teacher."},
-                {
-                    "role": "assistant",
-                    "content": "How can I write a article about sky?",
-                },
-            ],
-            max_tokens=None,
-            tools=[],
-            stream=True
-        )
-    elif client.ai_provider.ai_provider == AiProvider.DeepSeek.name:
-        # req = deepseek.DeepSeekAIRequestSchema(
-        #     input="Please say a joke about letters.",
-        #     max_output_tokens=None,
-        #     tools=[],
-        #     stream=True
-        # )
-        req = deepseek_schema.DeepSeekAICompletionsRequestSchema(
-            messages=[
-                {"role": "assistant", "content": "Talk like a school teacher."},
-                {
-                    "role": "assistant",
-                    "content": "How can I write a article about sky?",
-                },
-            ],
-            max_tokens=None,
-            tools=[],
-            stream=True
-        )
-    elif client.ai_provider.ai_provider == AiProvider.AliBailianChat.name:
-        req = ali_bailian_chat_schema.AliBailianChatAICompletionsRequestSchema(
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {
-                    "role": "user",
-                    "content": "编写一个Rust枚举OrderStatus，包含常用订单状态项，并附加可打印宏，不要输出非代码内容。",
-                },
-            ],
-            max_tokens=None,
-            tools=[],
-            stream=True
-        )
-    elif client.ai_provider.ai_provider == AiProvider.AliBailianTTS.name:
-        req = ali_bailian_tts_schema.AliBailianTtsRequestSchema(
-            text="请将这段文字转换为中文：I am a programmer.",
-            voice="Cherry",
-            language_type="Chinese",
-            stream=False
-        )
-    else:
-        logger.error(f"Unsupported ai provider: {client.ai_provider.ai_provider}")
-        return
+    # if client.ai_provider.ai_provider == AiProvider.Anthropic.name:
+    #     req = anthropic_schema.AnthropicAiRequestSchema(
+    #         messages=[
+    #             anthropic_schema.AnthropicAiMessagesSchema(
+    #                 anthropic_schema.MessageParam(
+    #                     role="user",
+    #                     content="Please say a joke about letters."
+    #                 )
+    #             )
+    #         ],
+    #         max_tokens=None,
+    #         tools=[],
+    #         stream=True
+    #     )
+    # elif client.ai_provider.ai_provider == AiProvider.OpenAI.name:
+    #     # req = OpenAIRequestSchema(
+    #     #     input="Please say a joke about letters.",
+    #     #     max_output_tokens=None,
+    #     #     tools=[],
+    #     #     stream=True
+    #     # )
+    #     req = openai_schema.OpenAICompletionsRequestSchema(
+    #         messages=[
+    #             {"role": "assistant", "content": "Talk like a school teacher."},
+    #             {
+    #                 "role": "assistant",
+    #                 "content": "How can I write a article about sky?",
+    #             },
+    #         ],
+    #         max_tokens=None,
+    #         tools=[],
+    #         stream=True
+    #     )
+    # elif client.ai_provider.ai_provider == AiProvider.DeepSeek.name:
+    #     # req = deepseek.DeepSeekAIRequestSchema(
+    #     #     input="Please say a joke about letters.",
+    #     #     max_output_tokens=None,
+    #     #     tools=[],
+    #     #     stream=True
+    #     # )
+    #     req = deepseek_schema.DeepSeekAICompletionsRequestSchema(
+    #         messages=[
+    #             {"role": "assistant", "content": "Talk like a school teacher."},
+    #             {
+    #                 "role": "assistant",
+    #                 "content": "How can I write a article about sky?",
+    #             },
+    #         ],
+    #         max_tokens=None,
+    #         tools=[],
+    #         stream=True
+    #     )
+    # elif client.ai_provider.ai_provider == AiProvider.AliBailianChat.name:
+    #     req = ali_bailian_chat_schema.AliBailianChatAICompletionsRequestSchema(
+    #         messages=[
+    #             {"role": "system", "content": "You are a helpful assistant."},
+    #             {
+    #                 "role": "user",
+    #                 "content": "编写一个Rust枚举OrderStatus，包含常用订单状态项，并附加可打印宏，不要输出非代码内容。",
+    #             },
+    #         ],
+    #         max_tokens=None,
+    #         tools=[],
+    #         stream=True
+    #     )
+    # elif client.ai_provider.ai_provider == AiProvider.AliBailianTTS.name:
+    #     req = ali_bailian_tts_schema.AliBailianTtsRequestSchema(
+    #         text="请将这段文字转换为中文：I am a programmer.",
+    #         voice="Cherry",
+    #         language_type="Chinese",
+    #         stream=False
+    #     )
+    # else:
+    #     logger.error(f"Unsupported ai provider: {client.ai_provider.ai_provider}")
+    #     return
 
     resp = ai_client.send_messages(request=req)
     print('RESP-RESP: ', resp)

@@ -1,9 +1,38 @@
 [build-system]
 # AVOID CHANGING REQUIRES: IT WILL BE UPDATED BY PYSCAFFOLD!
-requires = ["setuptools>=46.1.0", "setuptools_scm[toml]>=5"]
-build-backend = "setuptools.build_meta"
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
 
-[tool.setuptools_scm]
-# For smarter version schemes and other configuration options,
-# check out https://github.com/pypa/setuptools_scm
-version_scheme = "no-guess-dev"
+#[tool.setuptools_scm]
+## For smarter version schemes and other configuration options,
+## check out https://github.com/pypa/setuptools_scm
+#version_scheme = "no-guess-dev"
+
+[project]
+dynamic = ["version"]
+requires-python = ">= 3.10"
+name = "mcpbar"
+dependencies = [
+    "loguru>=0.7.3",
+    "typer>=0.16.0",
+    "mcp>=1.9.1",
+    "anthropic>=0.49.0",
+    "openai>=1.84.0",
+    "palshellpy==0.1.2",
+    "dashscope==1.25.4",
+]
+
+authors = [
+    {name = "Tiny Twist", email = "tiny.mahua@gmail.com"},
+]
+
+maintainers = [
+  {name = "Tiny Twist", email = "tiny.mahua@gmail.com"}
+]
+
+description = "MCP AI Provider bar"
+
+[project.urls]
+Home = "https://github.com/tinymahua/mcpbar"
+
+
