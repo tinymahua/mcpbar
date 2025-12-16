@@ -110,6 +110,8 @@ async def execute_server(server_schema: ServerSchema, ai_provider_schema: AiProv
     print('RESP-RESP: ', resp)
     if resp is anthropic_schema.AnthropicAiMessageSchema:
         logger.info(f'Resp: {resp}')
+    elif not req.stream:
+        logger.info(f'Resp: {resp}')
     else:
         for chunk in resp:
             logger.info(f'Stream Chunk: {chunk}')
