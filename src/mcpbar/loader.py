@@ -5,7 +5,7 @@ from mcpbar.server.local_runnable_js_server import LocalRunnableJsServer
 from mcpbar.schema.server_schema import LocalRunnablePyParams, LocalRunnableJsParams
 from typing import Dict
 from mcpbar.base import BaseServer, BaseAiProvider
-from mcpbar.provider import deepseek_ai_provider, ali_bailian_chat_provider, openai_provider, anthropic_ai_provider
+from mcpbar.provider import deepseek_ai_provider, ali_bailian_chat_provider, openai_provider, anthropic_ai_provider, ali_bailian_tts_provider
 
 class ServersLoader:
     servers: Dict[str, BaseServer] = {}
@@ -45,6 +45,8 @@ class AIProviderLoader:
             ai_provider_obj = deepseek_ai_provider.DeepSeekAIProvider(ai_provider_schema, ai_schema.DeepSeekAiProviderParams)
         elif _ai_provider_name  == ai_schema.AiProvider.AliBailianChat.name:
             ai_provider_obj = ali_bailian_chat_provider.AliBailianChatAIProvider(ai_provider_schema, ai_schema.AliBailianChatProviderParams)
+        elif _ai_provider_name == ai_schema.AiProvider.AliBailianTTS.name:
+            ai_provider_obj = ali_bailian_tts_provider.AliBailianTtsAIProvider(ai_provider_schema, ai_schema.AliBailianTtsProviderParams)
         else:
             raise ValueError(f"Invalid ai provider: {ai_provider_schema.ai_provider}")
 

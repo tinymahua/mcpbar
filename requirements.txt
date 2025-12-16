@@ -4,3 +4,4 @@ mcp>=1.9.1
 anthropic>=0.49.0
 openai>=1.84.0
 palshellpy==0.1.2
+dashscope==1.25.4

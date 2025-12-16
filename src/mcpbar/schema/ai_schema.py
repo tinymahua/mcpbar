@@ -6,6 +6,7 @@ from mcpbar.schema import anthropic as anthropic_schema
 from mcpbar.schema import openai as openai_schema
 from mcpbar.schema import deepseek as deepseek_schema
 from mcpbar.schema.ali_bailian import chat as ali_bailian_chat_schema
+from mcpbar.schema.ali_bailian import tts as ali_bailian_tts_schema
 
 ToolUnionParamSchema = NewType('ToolUnionParamSchema', anthropic_schema.AnthropicAiToolUnionParam)
 
@@ -19,6 +20,7 @@ AiRequestSchema = Union[
     deepseek_schema.DeepSeekAICompletionsRequestSchema,
     ali_bailian_chat_schema.AliBailianChatAIRequestSchema,
     ali_bailian_chat_schema.AliBailianChatAICompletionsRequestSchema,
+    ali_bailian_tts_schema.AliBailianTtsRequestSchema,
 ]
 AiResponseSchema = Union[
     anthropic_schema.AnthropicAiResponseSchema,
@@ -28,6 +30,7 @@ AiResponseSchema = Union[
     deepseek_schema.DeepSeekAIChatResponseSchema,
     ali_bailian_chat_schema.AliBailianChatAIResponseSchema,
     ali_bailian_chat_schema.AliBailianChatAIChatResponseSchema,
+    ali_bailian_tts_schema.AliBailianTtsResponseSchema,
 ]
 
 
@@ -43,6 +46,7 @@ class AiProvider(Enum):
     OpenAI = 'OpenAI'
     DeepSeek = 'DeepSeek'
     AliBailianChat = 'AliBailianChat'
+    AliBailianTTS = 'AliBailianTTS'
 
 
 @dataclass()
@@ -67,11 +71,17 @@ class AliBailianChatProviderParams:
     api_key: str
     base_url: str
 
+@dataclass()
+class AliBailianTtsProviderParams:
+    api_key: str
+    base_url: str
+
 AiProviderParams = Union[
     AnthropicAiProviderParams,
     OpenAIAiProviderParams,
     DeepSeekAiProviderParams,
     AliBailianChatProviderParams,
+    AliBailianTtsProviderParams,
 ]
 
 

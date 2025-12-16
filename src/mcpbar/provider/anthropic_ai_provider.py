@@ -74,7 +74,7 @@ class AnthropicAiProvider(BaseAiProvider):
 
     def get_client(self) -> AnthropicAiClient:
         return AnthropicAiClient(
-            self.ai_provider_schema.ai_provider_params.base_url,
-            self.ai_provider_schema.ai_provider_params.api_key,
+            self.ai_provider_params.base_url,
+            self.ai_provider_params.api_key,
             max_tokens=self.ai_provider_schema.max_tokens,
         )

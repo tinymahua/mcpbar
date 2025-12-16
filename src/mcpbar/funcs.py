@@ -5,6 +5,7 @@ from mcpbar.schema.ai_schema import AiProviderSchema, AiProvider
 from mcpbar.schema.ai_schema import anthropic_schema
 from mcpbar.schema.ai_schema import openai_schema
 from mcpbar.schema.ai_schema import ali_bailian_chat_schema
+from mcpbar.schema.ai_schema import ali_bailian_tts_schema
 from mcpbar.schema.ai_schema import deepseek_schema
 
 
@@ -94,20 +95,34 @@ async def execute_server(server_schema: ServerSchema, ai_provider_schema: AiProv
             tools=[],
             stream=True
         )
+    elif client.ai_provider.ai_provider == AiProvider.AliBailianTTS.name:
+        req = ali_bailian_tts_schema.AliBailianTtsRequestSchema(
+            text="请将这段文字转换为中文：I am a programmer.",
+            voice="Cherry",
+            language_type="Chinese",
+            stream=False
+        )
     else:
         logger.error(f"Unsupported ai provider: {client.ai_provider.ai_provider}")
         return
 
     resp = ai_client.send_messages(request=req)
+    print('RESP-RESP: ', resp)
     if resp is anthropic_schema.AnthropicAiMessageSchema:
         logger.info(f'Resp: {resp}')
     else:
         for chunk in resp:
             logger.info(f'Stream Chunk: {chunk}')
-            finish_reason = getattr(chunk, "finish_reason", None)
+            finish_reason = None
+            if client.ai_provider.ai_provider == AiProvider.AliBailianTTS.name:
+                finish_reason = getattr(chunk.output, "finish_reason", None)
+            else:
+                finish_reason = getattr(chunk, "finish_reason", None)
             print(f'FINISH_REASON: {finish_reason}')
             if finish_reason is not None and finish_reason == "stop":
                 print('DONE')
                 break
-
-    await client.server.close_session()
+    try:
+        await client.server.close_session()
+    except RuntimeError as e:
+        logger.error(f"Error closing session: {e}")

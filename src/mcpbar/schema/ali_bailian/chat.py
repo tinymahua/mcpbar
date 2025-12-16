@@ -3,6 +3,7 @@ from typing import Iterable, Union, Optional
 
 
 
+
 AliBailianChatAIMessageInputParam = openai.ResponseInputParam
 AliBailianChatAIInputParam = Union[str, AliBailianChatAIMessageInputParam]
 
@@ -29,3 +30,4 @@ AliBailianChatAIChatCompletion = openai.ChatCompletion
 AliBailianChatAiChatCompletionChunk = openai.ChatCompletionChunk
 AliBailianChatAIChatStream = openai.Stream
 AliBailianChatAIChatResponseSchema = Union[AliBailianChatAIChatCompletion, AliBailianChatAIChatStream]
+
