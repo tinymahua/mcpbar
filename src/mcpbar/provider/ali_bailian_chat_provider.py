@@ -24,13 +24,6 @@ class AliBailianChatAIClient(BaseAiClient):
 
     def send_messages(self, request: AiRequestSchema) -> AiResponseSchema:
         self.check_used_model()
-        # resp = self.api.responses.create(
-        #     model=self.used_model.model_name,
-        #     input=request.input,
-        #     max_output_tokens=request.max_output_tokens,
-        #     tools=request.tools,
-        #     stream=request.stream,
-        # )
         resp = self.api.chat.completions.create(
             model=self.used_model.model_name,
             messages=request.messages,
