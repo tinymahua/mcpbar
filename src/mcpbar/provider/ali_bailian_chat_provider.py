@@ -10,6 +10,7 @@ class AliBailianChatAIModelsEnum(Enum):
     qwen3_coder_plus = 'qwen3-coder-plus'
     deepseek_r1 = "deepseek-r1"
     deepseek_r1_distill_qwen_1_5b = "deepseek-r1-distill-qwen-1.5b"
+    qwen3_5_flash = "qwen3.5-flash"
 
 class AliBailianChatAIClient(BaseAiClient):
     def __init__(self, base_url: str, api_key: str, max_tokens: int, **kwargs):
